@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:black_jack/PlayerSetupScreen.dart';
+// import 'package:audioplayers/audioplayers.dart';
 
 class LeaderBoardScreen extends StatelessWidget {
   final List<String> playerNames;
@@ -13,6 +14,11 @@ class LeaderBoardScreen extends StatelessWidget {
     required this.gameDuration,
   });
 
+  // Future<void> playSound() async {
+  //   final player = AudioPlayer();
+  //   await player.play(AssetSource('win_sound.mp3'));
+  // }
+
   String formatTime(Duration duration) {
     final minutes = duration.inMinutes.toString().padLeft(2, '0');
     final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
@@ -21,6 +27,9 @@ class LeaderBoardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Play sound when entering the page
+    // WidgetsBinding.instance.addPostFrameCallback((_) => playSound());
+
     final rankedPlayers = List.generate(playerNames.length, (index) {
       return {'name': playerNames[index], 'score': scores[index]};
     })
