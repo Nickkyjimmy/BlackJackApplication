@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class GameScoreScreen extends StatefulWidget {
   final List<String> playerNames;
   final int betValue;
 
-  const GameScoreScreen({required this.playerNames, required this.betValue});
+  GameScoreScreen({required this.playerNames, required this.betValue});
 
   @override
   _GameScoreScreenState createState() => _GameScoreScreenState();
@@ -12,11 +13,39 @@ class GameScoreScreen extends StatefulWidget {
 
 class _GameScoreScreenState extends State<GameScoreScreen> {
   late List<int> scores;
+  late Timer _timer;
+  int _elapsedSeconds = 0;
+  bool _isTimerRunning = false;
 
   @override
   void initState() {
     super.initState();
     scores = List.filled(widget.playerNames.length, 0);
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    setState(() {
+      _isTimerRunning = true;
+    });
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _elapsedSeconds++;
+      });
+    });
+  }
+
+  void _stopTimer() {
+    setState(() {
+      _isTimerRunning = false;
+    });
+    _timer.cancel();
   }
 
   void _adjustScore(int index, int adjustment) {
@@ -31,6 +60,12 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
     });
   }
 
+  String _formatTime(int seconds) {
+    final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
+    final secs = (seconds % 60).toString().padLeft(2, '0');
+    return "$minutes:$secs";
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -41,9 +76,29 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Game Scores', style: TextStyle(fontSize: 24, color: Colors.white)),  
+        title: Column(
+          children: [
+            Text('Game Scores'),
+            Text(
+              'Timer: ${_formatTime(_elapsedSeconds)}',
+              style: TextStyle(fontSize: 16.0),
+            ),
+          ],
+        ),
         backgroundColor: Colors.green[800],
         centerTitle: true,
+        actions: [
+          if (_isTimerRunning)
+            IconButton(
+              onPressed: _stopTimer,
+              icon: Icon(Icons.pause),
+            )
+          else
+            IconButton(
+              onPressed: _startTimer,
+              icon: Icon(Icons.play_arrow),
+            ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
