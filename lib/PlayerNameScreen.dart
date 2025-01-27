@@ -6,7 +6,7 @@ class PlayerNameScreen extends StatelessWidget {
   final TextEditingController betValueController = TextEditingController();
   final List<TextEditingController> playerControllers = [];
 
-  PlayerNameScreen({required this.playerCount}) {
+  PlayerNameScreen({super.key, required this.playerCount}) {
     for (int i = 0; i < playerCount; i++) {
       playerControllers.add(TextEditingController());
     }

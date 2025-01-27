@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
-
 class GameScoreScreen extends StatefulWidget {
   final List<String> playerNames;
   final int betValue;
 
-  GameScoreScreen({required this.playerNames, required this.betValue});
+  const GameScoreScreen({required this.playerNames, required this.betValue});
 
   @override
   _GameScoreScreenState createState() => _GameScoreScreenState();
@@ -26,6 +25,12 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
     });
   }
 
+  void _winDouble(int index) {
+    setState(() {
+      scores[index] += 2 * widget.betValue;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -36,7 +41,7 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Game Scores'),
+        title: Text('Game Scores', style: TextStyle(fontSize: 24, color: Colors.white)),  
         backgroundColor: Colors.green[800],
         centerTitle: true,
       ),
@@ -47,7 +52,7 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
             crossAxisCount: crossAxisCount, // Dynamic columns
             crossAxisSpacing: 12.0,
             mainAxisSpacing: 12.0,
-            childAspectRatio: screenWidth / (screenHeight / 2.5),
+            childAspectRatio: 2.5,
           ),
           itemCount: widget.playerNames.length,
           itemBuilder: (context, index) {
@@ -83,16 +88,12 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        ElevatedButton.icon(
+                        ElevatedButton(
                           onPressed: () => _adjustScore(index, 1),
-                          icon: Icon(
+                          child: Icon(
                             Icons.add,
                             color: Colors.white,
                             size: screenWidth * 0.05,
-                          ),
-                          label: Text(
-                            'Add',
-                            style: TextStyle(fontSize: screenWidth * 0.04),
                           ),
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(
@@ -104,16 +105,29 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
                             ),
                           ),
                         ),
-                        ElevatedButton.icon(
-                          onPressed: () => _adjustScore(index, -1),
-                          icon: Icon(
-                            Icons.remove,
+                        ElevatedButton(
+                          onPressed: () => _winDouble(index),
+                          child: Icon(
+                            Icons.star,
                             color: Colors.white,
                             size: screenWidth * 0.05,
                           ),
-                          label: Text(
-                            'Lose',
-                            style: TextStyle(fontSize: screenWidth * 0.04),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              vertical: screenHeight * 0.01,
+                            ),
+                            backgroundColor: Colors.blue[600],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => _adjustScore(index, -1),
+                          child: Icon(
+                            Icons.remove,
+                            color: Colors.white,
+                            size: screenWidth * 0.05,
                           ),
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(

@@ -4,6 +4,8 @@ import 'package:black_jack/PlayerNameScreen.dart';
 class PlayerCountScreen extends StatelessWidget {
   final TextEditingController playerCountController = TextEditingController();
 
+  PlayerCountScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
