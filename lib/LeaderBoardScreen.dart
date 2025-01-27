@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'PlayerSetupScreen.dart';
+import 'package:black_jack/PlayerSetupScreen.dart';
 
 class LeaderBoardScreen extends StatelessWidget {
   final List<String> playerNames;
@@ -132,7 +132,7 @@ class LeaderBoardScreen extends StatelessWidget {
                  Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PlayerSetupScreen(),
+                    builder: (context) => PlayerCountScreen(),
                   ),
                   (route) => false,
                 );
