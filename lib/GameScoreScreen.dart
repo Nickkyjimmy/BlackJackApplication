@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:black_jack/LeaderBoardScreen.dart'; 
 
 class GameScoreScreen extends StatefulWidget {
   final List<String> playerNames;
@@ -66,6 +67,19 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
     return "$minutes:$secs";
   }
 
+  void _endGame() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LeaderBoardScreen(
+          playerNames: widget.playerNames,
+          scores: scores,
+          gameDuration: Duration(seconds: _elapsedSeconds),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -78,10 +92,10 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
       appBar: AppBar(
         title: Column(
           children: [
-            Text('Game Scores'),
+            Text('Game Score', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.white)),
             Text(
               'Timer: ${_formatTime(_elapsedSeconds)}',
-              style: TextStyle(fontSize: 16.0),
+              style: TextStyle(fontSize: 16.0, color: Colors.white),
             ),
           ],
         ),
@@ -100,108 +114,105 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
             ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount, // Dynamic columns
-            crossAxisSpacing: 12.0,
-            mainAxisSpacing: 12.0,
-            childAspectRatio: 2.5,
+      body: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 12.0,
+                  mainAxisSpacing: 12.0,
+                  childAspectRatio: 2.5,
+                ),
+                itemCount: widget.playerNames.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    color: Colors.green[50],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    elevation: 4.0,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.04,
+                        vertical: screenHeight * 0.02,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.playerNames[index],
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.05,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.01),
+                          Text(
+                            'Score: ${scores[index]}',
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.04,
+                            ),
+                          ),
+                          Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () => _adjustScore(index, 1),
+                                style: ElevatedButton.styleFrom(
+                                  shape: CircleBorder(),
+                                  padding: EdgeInsets.all(16.0),
+                                  backgroundColor: Colors.green[700],
+                                ),
+                                child: Icon(Icons.add, color: Colors.white),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => _winDouble(index),
+                                style: ElevatedButton.styleFrom(
+                                  shape: CircleBorder(),
+                                  padding: EdgeInsets.all(16.0),
+                                  backgroundColor: Colors.blue[600],
+                                ),
+                                child: Icon(Icons.star, color: Colors.white),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => _adjustScore(index, -1),
+                                style: ElevatedButton.styleFrom(
+                                  shape: CircleBorder(),
+                                  padding: EdgeInsets.all(16.0),
+                                  backgroundColor: Colors.red[400],
+                                ),
+                                child: Icon(Icons.remove, color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
-          itemCount: widget.playerNames.length,
-          itemBuilder: (context, index) {
-            return Card(
-              color: Colors.green[50],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.0),
+          Padding(
+            padding: const EdgeInsets.only(
+                bottom: 16.0), // Adds space above the bottom edge
+            child: ElevatedButton(
+              onPressed: _endGame,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+                backgroundColor: Colors.orange,
               ),
-              elevation: 4.0,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth * 0.04,
-                  vertical: screenHeight * 0.02,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.playerNames[index],
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.05,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: screenHeight * 0.01),
-                    Text(
-                      'Score: ${scores[index]}',
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.04,
-                      ),
-                    ),
-                    Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () => _adjustScore(index, 1),
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: screenWidth * 0.05,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              vertical: screenHeight * 0.01,
-                            ),
-                            backgroundColor: Colors.green[700],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () => _winDouble(index),
-                          child: Icon(
-                            Icons.star,
-                            color: Colors.white,
-                            size: screenWidth * 0.05,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              vertical: screenHeight * 0.01,
-                            ),
-                            backgroundColor: Colors.blue[600],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () => _adjustScore(index, -1),
-                          child: Icon(
-                            Icons.remove,
-                            color: Colors.white,
-                            size: screenWidth * 0.05,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              vertical: screenHeight * 0.01,
-                            ),
-                            backgroundColor: Colors.red[400],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              child: Text(
+                'End Game',
+                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.white),
               ),
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
