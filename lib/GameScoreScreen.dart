@@ -38,7 +38,7 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
     setState(() {
       _isTimerRunning = true;
     });
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _elapsedSeconds++;
       });
@@ -61,12 +61,12 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
         return AlertDialog(
           backgroundColor: Colors.deepPurple[900],
           title:
-              Text('Change Bet Value', style: TextStyle(color: Colors.white)),
+              const Text('Change Bet Value', style: TextStyle(color: Colors.white)),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
-            style: TextStyle(color: Colors.white),
-            decoration: InputDecoration(
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Enter new bet value',
               labelStyle: TextStyle(color: Colors.white),
@@ -80,7 +80,7 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cancel', style: TextStyle(color: Colors.white)),
+              child: const Text('Cancel', style: TextStyle(color: Colors.white)),
             ),
             TextButton(
               onPressed: () {
@@ -90,7 +90,7 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
                 });
                 Navigator.pop(context);
               },
-              child: Text('OK', style: TextStyle(color: Colors.white)),
+              child: const Text('OK', style: TextStyle(color: Colors.white)),
             ),
           ],
         );
@@ -132,6 +132,8 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isLandscape = screenWidth > screenHeight;
 
     return Scaffold(
       backgroundColor: Colors.deepPurple[800],
@@ -141,13 +143,17 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
             Text(
               'Xi Dach Game',
               style: TextStyle(
-                  fontSize: 26.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+                fontSize: isLandscape ? 18.0 : 26.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             Text(
               'Timer: ${_formatTime(_elapsedSeconds)}',
-              style: TextStyle(fontSize: 16.0, color: Colors.white70),
+              style: TextStyle(
+                fontSize: isLandscape ? 12.0 : 16.0,
+                color: Colors.white70,
+              ),
             ),
           ],
         ),
@@ -156,121 +162,94 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
         actions: [
           IconButton(
             onPressed: _changeBetValue,
-            icon: Icon(Icons.settings),
-            tooltip: 'Change Bet Value',
-            color: Colors.white,
-          ),
-          if (_isTimerRunning)
-            IconButton(
-              onPressed: _stopTimer,
-              icon: Icon(Icons.pause),
-              tooltip: 'Pause Timer',
-              color: Colors.white,
-            )
-          else
-            IconButton(
-              onPressed: _startTimer,
-              icon: Icon(Icons.play_arrow),
-              tooltip: 'Start Timer',
+            icon: Icon(
+              Icons.settings,
+              size: isLandscape ? 20.0 : 30.0,
               color: Colors.white,
             ),
+            tooltip: 'Change Bet Value',
+          ),
+          IconButton(
+            onPressed: _isTimerRunning ? _stopTimer : _startTimer,
+            icon: Icon(
+              _isTimerRunning ? Icons.pause : Icons.play_arrow,
+              size: isLandscape ? 20.0 : 30.0,
+              color: Colors.white,
+            ),
+            tooltip: _isTimerRunning ? 'Pause Timer' : 'Start Timer',
+          ),
         ],
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(isLandscape ? 8.0 : 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   'Bet Value: $_currentBetValue',
                   style: TextStyle(
-                      fontSize: 22.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange[300]),
+                    fontSize: isLandscape ? 18.0 : 22.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange[300],
+                  ),
                 ),
               ],
             ),
           ),
           Expanded(
             child: GridView.builder(
-              padding: EdgeInsets.all(8.0), // Reduced padding here
+              padding: EdgeInsets.all(isLandscape ? 4.0 : 8.0),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount:
-                    screenWidth > 800 ? 3 : (screenWidth > 500 ? 2 : 1),
-                crossAxisSpacing: 12.0,
-                mainAxisSpacing: 12.0,
-                childAspectRatio: 2.5,
+                crossAxisCount: screenWidth > 800 ? 3 : (screenWidth > 500 ? 2 : 1),
+                crossAxisSpacing: isLandscape ? 8.0 : 16.0,
+                mainAxisSpacing: isLandscape ? 8.0 : 16.0,
+                childAspectRatio: screenWidth > 500 ? 2 : 2.5,
               ),
               itemCount: widget.playerNames.length,
               itemBuilder: (context, index) {
                 return Card(
                   color: Colors.deepPurple[600],
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(12.0), // Reduced border radius
+                    borderRadius: BorderRadius.circular(16.0),
                   ),
-                  elevation: 6.0, // Reduced elevation
-                  shadowColor: Colors.black54,
+                  elevation: 6.0,
                   child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 8.0), // Reduced padding inside the card
+                    padding: EdgeInsets.all(isLandscape ? 8.0 : 12.0),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           widget.playerNames[index],
                           style: TextStyle(
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
+                            fontSize: isLandscape ? 16.0 : 20.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
-                        SizedBox(height: 8.0),
                         Text(
                           'Score: ${scores[index]}',
                           style: TextStyle(
-                              fontSize: 18.0, color: Colors.orange[300]),
+                            fontSize: isLandscape ? 14.0 : 18.0,
+                            color: Colors.orange[300],
+                          ),
                         ),
-                        Spacer(),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment
-                              .spaceEvenly, // Used spaceEvenly for a balanced layout
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            ElevatedButton(
-                              onPressed: () => _adjustScore(index, 1),
-                              style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(12.0),
-                                backgroundColor: Colors.green[600],
-                                elevation: 6.0,
-                              ),
-                              child: Icon(Icons.add,
-                                  color: Colors.white, size: 25.0),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => _winDouble(index),
-                              style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(12.0),
-                                backgroundColor: Colors.blue[700],
-                                elevation: 6.0,
-                              ),
-                              child: Icon(Icons.star,
-                                  color: Colors.white, size: 25.0),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => _adjustScore(index, -1),
-                              style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(12.0),
-                                backgroundColor: Colors.red[400],
-                                elevation: 6.0,
-                              ),
-                              child: Icon(Icons.remove,
-                                  color: Colors.white, size: 25.0),
-                            ),
+                            _buildScoreButton(Icons.add, Colors.green[600],
+                                isLandscape, () {
+                              _adjustScore(index, 1);
+                            }),
+                            _buildScoreButton(Icons.star, Colors.blue[700],
+                                isLandscape, () {
+                              _winDouble(index);
+                            }),
+                            _buildScoreButton(Icons.remove, Colors.red[400],
+                                isLandscape, () {
+                              _adjustScore(index, -1);
+                            }),
                           ],
                         ),
                       ],
@@ -281,11 +260,16 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
+            padding: EdgeInsets.only(
+              bottom: isLandscape ? 8.0 : 16.0,
+            ),
             child: ElevatedButton(
               onPressed: _endGame,
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+                padding: EdgeInsets.symmetric(
+                  vertical: isLandscape ? 8.0 : 16.0,
+                  horizontal: isLandscape ? 16.0 : 32.0,
+                ),
                 backgroundColor: Colors.orange[600],
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0),
@@ -295,15 +279,16 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
               child: Text(
                 'End Game',
                 style: TextStyle(
-                    fontSize: 22.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                  fontSize: isLandscape ? 18.0 : 22.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
+            padding: EdgeInsets.all(isLandscape ? 4.0 : 8.0),
+            child: const Text(
               '© 2025 ThaiTuNhaBe 🕹️. All Rights Reserved.',
               style: TextStyle(fontSize: 14.0, color: Colors.white70),
               textAlign: TextAlign.center,
@@ -311,6 +296,20 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildScoreButton(
+      IconData icon, Color? color, bool isLandscape, VoidCallback onPressed) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        shape: const CircleBorder(),
+        padding: EdgeInsets.all(isLandscape ? 8.0 : 12.0),
+        backgroundColor: color,
+        elevation: 6.0,
+      ),
+      child: Icon(icon, color: Colors.white, size: isLandscape ? 20.0 : 25.0),
     );
   }
 }
