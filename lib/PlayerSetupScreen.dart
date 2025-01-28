@@ -42,16 +42,34 @@ class PlayerCountScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Colors.orangeAccent,
                 ),
               ),
               SizedBox(height: 16),
+              // Add image below the welcome text
+              Center(
+                child: Image.asset(
+                  'assets/main_logo.png',
+                  height: 150,
+                  width: 150,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(height: 20),
+              Text("A game of luck and strategy! 🎲", textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white70,
+                ),
+              ),
+              SizedBox(height: 20),
               Text(
                 'Enter the number of players:',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: Colors.white70,
+                  color: Colors.white,
                 ),
               ),
               SizedBox(height: 12),
@@ -74,7 +92,7 @@ class PlayerCountScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     final playerCount = int.tryParse(playerCountController.text);
-                    if (playerCount != null && playerCount > 0) {
+                    if (playerCount != null && playerCount > 0 && playerCount <= 25) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -85,7 +103,7 @@ class PlayerCountScreen extends StatelessWidget {
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Enter a valid number of players!'),
+                          content: Text('Please enter a number between 1 and 24 !'),
                           backgroundColor: Colors.redAccent,
                         ),
                       );
@@ -118,19 +136,68 @@ class PlayerCountScreen extends StatelessWidget {
                 ),
               ),
               Spacer(),
-              Text(
-                '🎮 Let the best player win!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.white70,
-                ),
+              Column(
+                children: [
+                  Text(
+                    '🎮 Let the best player win!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.white70,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  // Add copyright text at the bottom
+                  Text(
+                    '© 2025 ThaiTuNhaBe 🕹️. All rights reserved.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white54,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showHelpDialog(context),
+        backgroundColor: Colors.blueAccent,
+        child: Icon(
+          Icons.help_outline,
+          color: Colors.white,
+        ),
+        tooltip: 'Help Guide',
+      ),
+    );
+  }
+
+  // Method to show a help dialog with brief instructions
+  void _showHelpDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Game Instructions'),
+          content: Text(
+            '1. Enter the number of players (1-24) and tap "Start Game".\n\n'
+            '2. Then, enter the names of all players and proceed to play!\n\n'
+            '3. Enjoy the game and may the best player win!',
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

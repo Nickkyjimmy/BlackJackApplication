@@ -204,6 +204,16 @@ return Scaffold(
                       color: Colors.white70,
                     ),
                   ),
+                  SizedBox(height: 16),
+                  Text(
+                    '© 2025 ThaiTuNhaBe 🕹️. All rights reserved.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white54,
+                    ),
+                  ),
                 ],
               ),
             ),

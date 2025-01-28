@@ -6,7 +6,8 @@ class GameScoreScreen extends StatefulWidget {
   final List<String> playerNames;
   final int betValue;
 
-  const GameScoreScreen({super.key, required this.playerNames, required this.betValue});
+  const GameScoreScreen(
+      {super.key, required this.playerNames, required this.betValue});
 
   @override
   _GameScoreScreenState createState() => _GameScoreScreenState();
@@ -55,10 +56,12 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        TextEditingController controller = TextEditingController(text: '$_currentBetValue');
+        TextEditingController controller =
+            TextEditingController(text: '$_currentBetValue');
         return AlertDialog(
           backgroundColor: Colors.deepPurple[900],
-          title: Text('Change Bet Value', style: TextStyle(color: Colors.white)),
+          title:
+              Text('Change Bet Value', style: TextStyle(color: Colors.white)),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
@@ -82,7 +85,8 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  _currentBetValue = int.tryParse(controller.text) ?? _currentBetValue;
+                  _currentBetValue =
+                      int.tryParse(controller.text) ?? _currentBetValue;
                 });
                 Navigator.pop(context);
               },
@@ -135,8 +139,11 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
         title: Column(
           children: [
             Text(
-              'Mystical Night Game',
-              style: TextStyle(fontSize: 26.0, fontWeight: FontWeight.bold, color: Colors.white),
+              'Xi Dach Game',
+              style: TextStyle(
+                  fontSize: 26.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
             Text(
               'Timer: ${_formatTime(_elapsedSeconds)}',
@@ -178,16 +185,20 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
               children: [
                 Text(
                   'Bet Value: $_currentBetValue',
-                  style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold, color: Colors.orange[300]),
+                  style: TextStyle(
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[300]),
                 ),
               ],
             ),
           ),
           Expanded(
             child: GridView.builder(
-              padding: EdgeInsets.all(8.0),  // Reduced padding here
+              padding: EdgeInsets.all(8.0), // Reduced padding here
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: screenWidth > 800 ? 3 : (screenWidth > 500 ? 2 : 1),
+                crossAxisCount:
+                    screenWidth > 800 ? 3 : (screenWidth > 500 ? 2 : 1),
                 crossAxisSpacing: 12.0,
                 mainAxisSpacing: 12.0,
                 childAspectRatio: 2.5,
@@ -197,27 +208,35 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
                 return Card(
                   color: Colors.deepPurple[600],
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),  // Reduced border radius
+                    borderRadius:
+                        BorderRadius.circular(12.0), // Reduced border radius
                   ),
-                  elevation: 6.0,  // Reduced elevation
+                  elevation: 6.0, // Reduced elevation
                   shadowColor: Colors.black54,
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),  // Reduced padding inside the card
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 12.0,
+                        vertical: 8.0), // Reduced padding inside the card
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           widget.playerNames[index],
-                          style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.white),
+                          style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
                         ),
                         SizedBox(height: 8.0),
                         Text(
                           'Score: ${scores[index]}',
-                          style: TextStyle(fontSize: 18.0, color: Colors.orange[300]),
+                          style: TextStyle(
+                              fontSize: 18.0, color: Colors.orange[300]),
                         ),
                         Spacer(),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,  // Used spaceEvenly for a balanced layout
+                          mainAxisAlignment: MainAxisAlignment
+                              .spaceEvenly, // Used spaceEvenly for a balanced layout
                           children: [
                             ElevatedButton(
                               onPressed: () => _adjustScore(index, 1),
@@ -227,7 +246,8 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
                                 backgroundColor: Colors.green[600],
                                 elevation: 6.0,
                               ),
-                              child: Icon(Icons.add, color: Colors.white, size: 25.0),
+                              child: Icon(Icons.add,
+                                  color: Colors.white, size: 25.0),
                             ),
                             ElevatedButton(
                               onPressed: () => _winDouble(index),
@@ -237,7 +257,8 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
                                 backgroundColor: Colors.blue[700],
                                 elevation: 6.0,
                               ),
-                              child: Icon(Icons.star, color: Colors.white, size: 25.0),
+                              child: Icon(Icons.star,
+                                  color: Colors.white, size: 25.0),
                             ),
                             ElevatedButton(
                               onPressed: () => _adjustScore(index, -1),
@@ -247,7 +268,8 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
                                 backgroundColor: Colors.red[400],
                                 elevation: 6.0,
                               ),
-                              child: Icon(Icons.remove, color: Colors.white, size: 25.0),
+                              child: Icon(Icons.remove,
+                                  color: Colors.white, size: 25.0),
                             ),
                           ],
                         ),
@@ -272,8 +294,19 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
               ),
               child: Text(
                 'End Game',
-                style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              '© 2025 ThaiTuNhaBe 🕹️. All Rights Reserved.',
+              style: TextStyle(fontSize: 14.0, color: Colors.white70),
+              textAlign: TextAlign.center,
             ),
           ),
         ],
