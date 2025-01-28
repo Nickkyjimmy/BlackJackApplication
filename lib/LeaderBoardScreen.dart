@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:black_jack/PlayerSetupScreen.dart';
-// import 'package:audioplayers/audioplayers.dart';
 
 class LeaderBoardScreen extends StatelessWidget {
   final List<String> playerNames;
@@ -14,11 +13,6 @@ class LeaderBoardScreen extends StatelessWidget {
     required this.gameDuration,
   });
 
-  // Future<void> playSound() async {
-  //   final player = AudioPlayer();
-  //   await player.play(AssetSource('win_sound.mp3'));
-  // }
-
   String formatTime(Duration duration) {
     final minutes = duration.inMinutes.toString().padLeft(2, '0');
     final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
@@ -27,139 +21,269 @@ class LeaderBoardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Play sound when entering the page
-    // WidgetsBinding.instance.addPostFrameCallback((_) => playSound());
-
-    final rankedPlayers = List.generate(playerNames.length, (index) {
+    final winningPlayers = List.generate(playerNames.length, (index) {
       return {'name': playerNames[index], 'score': scores[index]};
-    })
-      ..sort((a, b) => (b['score'] as int).compareTo(a['score'] as int));
+    }).where((player) => (player['score'] as int) > 0).toList();
 
-    final topPlayers = rankedPlayers.take(3).toList(); // Top 3 players
-    final otherPlayers = rankedPlayers.skip(3).toList(); // Remaining players
+    final losingPlayers = List.generate(playerNames.length, (index) {
+      return {'name': playerNames[index], 'score': scores[index]};
+    }).where((player) => (player['score'] as int) < 0).toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Leaderboard'),
-        backgroundColor: Colors.blue,
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          // Game Duration Display
-          Container(
-            color: Colors.blue[100],
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: Text(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/champion.png',
+              height: 30, // Adjust height as needed
+              width: 30, // Adjust width as needed
+            ),
+            SizedBox(width: 10), // Add space between image and title
+            Text(
               'Game Duration: ${formatTime(gameDuration)}',
-              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.blue[900],
+                color: Colors.white,
+                letterSpacing: 1.5,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.4),
+                    offset: Offset(2, 2),
+                    blurRadius: 4),
+                ],
               ),
             ),
+          ],
+        ),
+        backgroundColor: Colors.deepPurpleAccent,
+        centerTitle: true,
+        elevation: 10,
+        shadowColor: Colors.black.withOpacity(0.5),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.purple[800]!, Colors.blue[900]!],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          // Top 3 players
-          Container(
-            color: Colors.blue[50],
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: List.generate(topPlayers.length, (index) {
-                final player = topPlayers[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                  color: index == 0
-                      ? Colors.amber[200]
-                      : index == 1
-                          ? Colors.grey[300]
-                          : Colors.brown[200],
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.blue[700],
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              flex: 1,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
                       child: Text(
-                        '#${index + 1}',
-                        style: const TextStyle(color: Colors.white),
+                        'Leaderboard',
+                        style: TextStyle(
+                          fontSize: 28.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                                color: Colors.black.withOpacity(0.5),
+                                offset: Offset(2, 2),
+                                blurRadius: 6),
+                          ],
+                        ),
                       ),
                     ),
-                    title: Text(
-                      player['name'] as String,
-                      style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                    ),
-                    trailing: Text(
-                      'Score: ${player['score']}',
-                      style: const TextStyle(fontSize: 16.0),
-                    ),
-                  ),
-                );
-              }),
-            ),
-          ),
-          const Divider(thickness: 2.0), // Separate the top and other players
-          // Remaining players
-          Expanded(
-            child: ListView.builder(
-              itemCount: otherPlayers.length,
-              itemBuilder: (context, index) {
-                final player = otherPlayers[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.blue[700],
-                      child: Text(
-                        '#${index + 4}', // Starts from 4
-                        style: const TextStyle(color: Colors.white),
+                    // Check if there are any winning or losing players
+                    if (winningPlayers.isEmpty && losingPlayers.isEmpty) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Text(
+                          'No winners or losers. All players have a score of 0.',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                    ),
-                    title: Text(
-                      player['name'] as String,
-                      style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                    ),
-                    trailing: Text(
-                      'Score: ${player['score']}',
-                      style: const TextStyle(fontSize: 16.0),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          // Back to Home Button
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                // Clear all data
-                 Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PlayerCountScreen(),
-                  ),
-                  (route) => false,
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0),
+                    ] else ...[
+                      if (winningPlayers.isNotEmpty) ...[ 
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: Text(
+                            'Winning Players',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.greenAccent,
+                            ),
+                          ),
+                        ),
+                        ...List.generate(winningPlayers.length, (index) {
+                          final player = winningPlayers[index];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 8.0),
+                            elevation: 6,
+                            shadowColor: Colors.black.withOpacity(0.3),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            color: Colors.greenAccent[100],
+                            child: Padding( 
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  radius: 25,
+                                  backgroundColor: Colors.green[700],
+                                  child: Text(
+                                    '#${index + 1}',
+                                    style: const TextStyle(color: Colors.white, fontSize: 20.0),
+                                  ),
+                                ),
+                                title: Text(
+                                  player['name'] as String,
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                trailing: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300], 
+                                    borderRadius: BorderRadius.circular(14.0),
+                                  ),
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.star, color: Colors.yellow[700]),
+                                      Text(
+                                        ' ${player['score']}',
+                                        style: TextStyle(
+                                          fontSize: 18.0,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                      ],
+                      if (losingPlayers.isNotEmpty) ...[
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                          child: Text(
+                            'Losing Players',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.redAccent,
+                            ),
+                          ),
+                        ),
+                        ...List.generate(losingPlayers.length, (index) {
+                          final player = losingPlayers[index];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 8.0),
+                            elevation: 6,
+                            shadowColor: Colors.black.withOpacity(0.3),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            color: Colors.redAccent[100],
+                            child: Padding( 
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  radius: 25,
+                                  backgroundColor: Colors.red[700],
+                                  child: Text(
+                                    '#${index + winningPlayers.length + 1}',
+                                    style: const TextStyle(color: Colors.white, fontSize: 20.0),
+                                  ),
+                                ),
+                                title: Text(
+                                  player['name'] as String,
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                trailing: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(14.0),
+                                  ),
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.star_border, color: Colors.grey[500]),
+                                      Text(
+                                        ' ${player['score']}',
+                                        style: TextStyle(
+                                          fontSize: 18.0,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                      ],
+                    ],
+                  ],
                 ),
               ),
-              child: const Text(
-                'Back to Home',
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 30),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlayerCountScreen(),
+                      ),
+                      (route) => false,
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red[800],
+                    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    elevation: 5,
+                    shadowColor: Colors.black.withOpacity(0.3),
+                  ),
+                  child: const Text(
+                    'Back to Home',
+                    style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
