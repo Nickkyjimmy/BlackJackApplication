@@ -5,9 +5,10 @@ import 'package:black_jack/LeaderBoardScreen.dart';
 class GameScoreScreen extends StatefulWidget {
   final List<String> playerNames;
   final int betValue;
+  final String hostName;
 
   const GameScoreScreen(
-      {super.key, required this.playerNames, required this.betValue});
+      {super.key, required this.hostName, required this.playerNames, required this.betValue});
 
   @override
   _GameScoreScreenState createState() => _GameScoreScreenState();

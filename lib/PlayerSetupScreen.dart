@@ -101,7 +101,7 @@ class PlayerCountScreen extends StatelessWidget {
                       FocusScope.of(context).unfocus();
 
                       final playerCount = int.tryParse(playerCountController.text);
-                      if (playerCount != null && playerCount > 0 && playerCount <= 25) {
+                      if (playerCount != null && playerCount > 0 && playerCount < 25) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -177,11 +177,11 @@ class PlayerCountScreen extends StatelessWidget {
           child: FloatingActionButton(
             onPressed: () => _showHelpDialog(context),
             backgroundColor: Colors.blueAccent,
+            tooltip: 'Help Guide',
             child: Icon(
               Icons.help_outline,
               color: Colors.white,
             ),
-            tooltip: 'Help Guide',
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
