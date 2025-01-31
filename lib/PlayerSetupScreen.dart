@@ -41,15 +41,6 @@ class PlayerCountScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  'Welcome to the Game!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orangeAccent,
-                  ),
-                ),
                 SizedBox(height: 16),
                 Center(
                   child: Image.asset(

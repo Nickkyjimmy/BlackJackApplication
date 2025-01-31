@@ -8,7 +8,10 @@ class GameScoreScreen extends StatefulWidget {
   final String hostName;
 
   const GameScoreScreen(
-      {super.key, required this.hostName, required this.playerNames, required this.betValue});
+      {super.key,
+      required this.hostName,
+      required this.playerNames,
+      required this.betValue});
 
   @override
   _GameScoreScreenState createState() => _GameScoreScreenState();
@@ -16,6 +19,8 @@ class GameScoreScreen extends StatefulWidget {
 
 class _GameScoreScreenState extends State<GameScoreScreen> {
   late List<int> scores;
+  late List<int> wins; // New list to track wins
+  late List<int> losses; // New list to track losses
   late Timer _timer;
   int _elapsedSeconds = 0;
   bool _isTimerRunning = false;
@@ -25,6 +30,8 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
   void initState() {
     super.initState();
     scores = List.filled(widget.playerNames.length, 0);
+    wins = List.filled(widget.playerNames.length, 0); // Initialize wins
+    losses = List.filled(widget.playerNames.length, 0); // Initialize losses
     _currentBetValue = widget.betValue;
     _startTimer();
   }
@@ -61,8 +68,8 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
             TextEditingController(text: '$_currentBetValue');
         return AlertDialog(
           backgroundColor: Colors.deepPurple[900],
-          title:
-              const Text('Change Bet Value', style: TextStyle(color: Colors.white)),
+          title: const Text('Change Bet Value',
+              style: TextStyle(color: Colors.white)),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
@@ -81,7 +88,8 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+              child:
+                  const Text('Cancel', style: TextStyle(color: Colors.white)),
             ),
             TextButton(
               onPressed: () {
@@ -102,13 +110,38 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
   void _adjustScore(int index, int adjustment) {
     setState(() {
       scores[index] += adjustment * _currentBetValue;
+      if (adjustment > 0) {
+        wins[index] += 1; // Increment win for positive adjustment
+      } else if (adjustment < 0) {
+        losses[index] += 1; // Increment loss for negative adjustment
+      }
     });
   }
 
   void _winDouble(int index) {
     setState(() {
       scores[index] += 2 * _currentBetValue;
+      wins[index] += 1; // Increment win for winning double
     });
+  }
+
+  int _calculateBalance() {
+    return (-(scores.fold(0, (sum, score) => sum + score)));
+  }
+
+  String _formatBalance(int balance) {
+    String formattedBalance = balance.abs().toString().replaceAllMapped(
+        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (match) => '${match[1]}.');
+    return balance >= 0 ? "+$formattedBalance" : "-$formattedBalance";
+  }
+
+  Color _getBalanceColor(int balance) {
+    if (balance > 0) {
+      return Colors.greenAccent;
+    } else if (balance < 0) {
+      return Colors.redAccent;
+    }
+    return Colors.white;
   }
 
   String _formatTime(int seconds) {
@@ -117,15 +150,30 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
     return "$minutes:$secs";
   }
 
+  // int _getTotalRound() {
+  //   int totalRounds = 0;
+
+  //   // Calculate total rounds by summing wins and losses for each player
+  //   for (int i = 0; i < widget.playerNames.length; i++) {
+  //     totalRounds += wins[i] + losses[i];
+  //   }
+  //   return totalRounds;
+  // }
+
   void _endGame() {
+    int hostEarnings = _calculateBalance();
+    // int totalRounds = _getTotalRound();
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => LeaderBoardScreen(
-          playerNames: widget.playerNames,
-          scores: scores,
-          gameDuration: Duration(seconds: _elapsedSeconds),
-        ),
+            playerNames: widget.playerNames,
+            // totalRounds: totalRounds,
+            scores: scores,
+            gameDuration: Duration(seconds: _elapsedSeconds),
+            hostName: widget.hostName,
+            winningPlayers : wins,
+            hostEarnings: hostEarnings),
       ),
     );
   }
@@ -142,18 +190,19 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
         title: Column(
           children: [
             Text(
-              'Xi Dach Game',
+              'Host: ${widget.hostName}',
               style: TextStyle(
-                fontSize: isLandscape ? 18.0 : 26.0,
+                fontSize: isLandscape ? 18.0 : 24.0,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
             Text(
-              'Timer: ${_formatTime(_elapsedSeconds)}',
+              'Balance: ${_formatBalance(_calculateBalance())}',
               style: TextStyle(
                 fontSize: isLandscape ? 12.0 : 16.0,
-                color: Colors.white70,
+                fontWeight: FontWeight.bold,
+                color: _getBalanceColor(_calculateBalance()),
               ),
             ),
           ],
@@ -183,15 +232,16 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
       ),
       body: Column(
         children: [
+          // Updated Padding for Bet Value and Duration
           Padding(
-            padding: EdgeInsets.all(isLandscape ? 8.0 : 16.0),
+            padding: EdgeInsets.symmetric(vertical: isLandscape ? 4.0 : 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   'Bet Value: $_currentBetValue',
                   style: TextStyle(
-                    fontSize: isLandscape ? 18.0 : 22.0,
+                    fontSize: isLandscape ? 15.0 : 20.0,
                     fontWeight: FontWeight.bold,
                     color: Colors.orange[300],
                   ),
@@ -199,11 +249,30 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
               ],
             ),
           ),
+          // The Duration padding updated here as well
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: isLandscape ? 4.0 : 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Elapsed Time: ${_formatTime(_elapsedSeconds)}',
+                  style: TextStyle(
+                    fontSize: isLandscape ? 12.0 : 16.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white60,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
           Expanded(
             child: GridView.builder(
               padding: EdgeInsets.all(isLandscape ? 4.0 : 8.0),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: screenWidth > 800 ? 3 : (screenWidth > 500 ? 2 : 1),
+                crossAxisCount:
+                    screenWidth > 800 ? 3 : (screenWidth > 500 ? 2 : 1),
                 crossAxisSpacing: isLandscape ? 8.0 : 16.0,
                 mainAxisSpacing: isLandscape ? 8.0 : 16.0,
                 childAspectRatio: screenWidth > 500 ? 2 : 2.5,
@@ -236,19 +305,26 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
                             color: Colors.orange[300],
                           ),
                         ),
+                        Text(
+                          '${wins[index]}W-${losses[index]}L', // Show win-loss
+                          style: TextStyle(
+                            fontSize: isLandscape ? 14.0 : 18.0,
+                            color: Colors.green[300],
+                          ),
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _buildScoreButton(Icons.add, Colors.green[600],
-                                isLandscape, () {
+                            _buildScoreButton(
+                                Icons.add, Colors.green[600], isLandscape, () {
                               _adjustScore(index, 1);
                             }),
-                            _buildScoreButton(Icons.star, Colors.blue[700],
-                                isLandscape, () {
+                            _buildScoreButton(
+                                Icons.star, Colors.blue[700], isLandscape, () {
                               _winDouble(index);
                             }),
-                            _buildScoreButton(Icons.remove, Colors.red[400],
-                                isLandscape, () {
+                            _buildScoreButton(
+                                Icons.remove, Colors.red[400], isLandscape, () {
                               _adjustScore(index, -1);
                             }),
                           ],
@@ -260,36 +336,26 @@ class _GameScoreScreenState extends State<GameScoreScreen> {
               },
             ),
           ),
+
+          // End Game Button
           Padding(
-            padding: EdgeInsets.only(
-              bottom: isLandscape ? 8.0 : 16.0,
-            ),
+            padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
               onPressed: _endGame,
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(
-                  vertical: isLandscape ? 8.0 : 16.0,
-                  horizontal: isLandscape ? 16.0 : 32.0,
-                ),
-                backgroundColor: Colors.orange[600],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                elevation: 8.0,
+                iconColor: Colors.redAccent,
+                padding: const EdgeInsets.symmetric(
+                    vertical: 16.0, horizontal: 32.0),
+                textStyle:
+                    TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               ),
-              child: Text(
-                'End Game',
-                style: TextStyle(
-                  fontSize: isLandscape ? 18.0 : 22.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
+              child: Text('End Game'),
             ),
           ),
+
           Padding(
-            padding: EdgeInsets.all(isLandscape ? 4.0 : 8.0),
-            child: const Text(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
               '© 2025 ThaiTuNhaBe 🕹️. All Rights Reserved.',
               style: TextStyle(fontSize: 14.0, color: Colors.white70),
               textAlign: TextAlign.center,

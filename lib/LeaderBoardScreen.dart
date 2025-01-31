@@ -5,12 +5,20 @@ class LeaderBoardScreen extends StatelessWidget {
   final List<String> playerNames;
   final List<int> scores;
   final Duration gameDuration;
+  // final int totalRounds;
+  final String hostName;
+  final int hostEarnings;
+  final List<int> winningPlayers;
 
   const LeaderBoardScreen({
     super.key,
     required this.playerNames,
     required this.scores,
     required this.gameDuration,
+    required this.hostName,
+    required this.hostEarnings,
+    // required this.totalRounds,
+    required this.winningPlayers,
   });
 
   String formatTime(Duration duration) {
@@ -19,15 +27,20 @@ class LeaderBoardScreen extends StatelessWidget {
     return "$minutes:$seconds";
   }
 
+  // Calculate the win rate (win/total rounds)
+  // double getWinRate(int wins) {
+  //   return (wins / totalRounds) * 100;
+  // }
+
   @override
   Widget build(BuildContext context) {
     final winningPlayers = List.generate(playerNames.length, (index) {
-      return {'name': playerNames[index], 'score': scores[index]};
+      return {'name': playerNames[index], 'score': scores[index], 'wins': scores[index] > 0 ? 1 : 0};
     }).where((player) => (player['score'] as int) > 0).toList();
 
     final losingPlayers = List.generate(playerNames.length, (index) {
-      return {'name': playerNames[index], 'score': scores[index]};
-    }).where((player) => (player['score'] as int) < 0).toList();
+      return {'name': playerNames[index], 'score': scores[index], 'wins': scores[index] <= 0 ? 0 : 1};
+    }).where((player) => (player['score'] as int) <= 0).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -73,6 +86,22 @@ class LeaderBoardScreen extends StatelessWidget {
         ),
         child: Column(
           children: [
+            // Host Info Section - at the top
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Text(
+                'Host: $hostName | Earnings: $hostEarnings VND',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                  color: hostEarnings > 0
+                      ? Colors.green
+                      : Colors.red,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            // Leaderboard Section - moved down
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -81,19 +110,38 @@ class LeaderBoardScreen extends StatelessWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20.0),
-                      child: Text(
-                        'Leaderboard',
-                        style: TextStyle(
-                          fontSize: 28.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          shadows: [
-                            Shadow(
-                                color: Colors.black.withOpacity(0.5),
-                                offset: Offset(2, 2),
-                                blurRadius: 6),
-                          ],
-                        ),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Leaderboard',
+                            style: TextStyle(
+                              fontSize: 22.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              shadows: [
+                                Shadow(
+                                    color: Colors.black.withOpacity(0.5),
+                                    offset: Offset(2, 2),
+                                    blurRadius: 6),
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 20), // Spacing between leaderboard and rounds
+                          Text(
+                            '',
+                            style: TextStyle(
+                              fontSize: 22.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              shadows: [
+                                Shadow(
+                                    color: Colors.black.withOpacity(0.5),
+                                    offset: Offset(2, 2),
+                                    blurRadius: 6),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     if (winningPlayers.isEmpty && losingPlayers.isEmpty) ...[
